@@ -70,4 +70,55 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         throw new RuntimeException("Not implemented");
     }
+
+    /*WHITE TEAM*/
+    ChessPiece pawn = new ChessPiece(
+            ChessGame.TeamColor.WHITE,
+            ChessPiece.PieceType.PAWN
+    );
+    ChessPiece rook = new ChessPiece(
+            ChessGame.TeamColor.WHITE,
+            PieceType.ROOK
+    );
+    ChessPiece knight = new ChessPiece(
+            ChessGame.TeamColor.WHITE,
+            PieceType.KNIGHT
+    );
+    ChessPiece bishop = new ChessPiece(
+            ChessGame.TeamColor.WHITE,
+            PieceType.BISHOP
+    );
+    ChessPiece queen = new ChessPiece(
+            ChessGame.TeamColor.WHITE,
+            PieceType.QUEEN
+    );
+    ChessPiece king = new ChessPiece(
+            ChessGame.TeamColor.WHITE,
+            PieceType.KING
+    );
+    /*BLACK TEAM*/
+    ChessPiece pawn = new ChessPiece(
+            ChessGame.TeamColor.BLACK,
+            ChessPiece.PieceType.PAWN
+    );
+    ChessPiece rook = new ChessPiece(
+            ChessGame.TeamColor.BLACK,
+            PieceType.ROOK
+    );
+    ChessPiece knight = new ChessPiece(
+            ChessGame.TeamColor.BLACK,
+            PieceType.KNIGHT
+    );
+    ChessPiece bishop = new ChessPiece(
+            ChessGame.TeamColor.BLACK,
+            PieceType.BISHOP
+    );
+    ChessPiece queen = new ChessPiece(
+            ChessGame.TeamColor.BLACK,
+            PieceType.QUEEN
+    );
+    ChessPiece king = new ChessPiece(
+            ChessGame.TeamColor.BLACK,
+            PieceType.KING
+    );
 }
