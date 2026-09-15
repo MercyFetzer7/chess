@@ -95,6 +95,20 @@ public class ChessPiece {
             case BISHOP:
                 break;
             case KNIGHT:
+                int [][] knightMoves = {{-2,1}, {-1,2}, {1,2}, {2,1}, {2,-1}, {1,-2}, {-1,-2}, {-2,-1}};
+
+                for (int[] move : knightMoves) {
+                    int row = myPosition.getRow() + move[0];
+                    int col = myPosition.getColumn() + move[1];
+
+                    if (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
+                        ChessPosition newPosition = new ChessPosition(row, col);
+
+                        if (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != pieceColor) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                    }
+                }
                 break;
             case ROOK:
                 break;
