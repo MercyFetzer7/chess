@@ -91,10 +91,51 @@ public class ChessPiece {
                 break;
 
             case QUEEN:
+                int [][] queenMoves = {{-1,1}, {0,1}, {1,1}, {-1,0}, {1,0}, {-1,-1}, {0,-1}, {1,-1}};
+
+                for (int[] move : queenMoves) {
+                    int row = myPosition.getRow();
+                    int col = myPosition.getColumn();
+
+                    while (true) {
+                        row += move[0];
+                        col += move[1];
+
+                        if (row < 1 || row > 8 || col < 1 || col > 8) {
+                            break;
+                        }
+
+                        ChessPosition newPosition = new ChessPosition(row, col);
+
+                        if (board.getPiece(newPosition) == null) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                        else {
+                            if (board.getPiece(newPosition).getTeamColor() != pieceColor) {
+                                moves.add(new ChessMove(myPosition, newPosition, null));
+                            }
+                            break;
+                        }
+                    }
+                }
                 break;
             case BISHOP:
+                int [][] bishopMoves = {{-1,1}, {1,1}, {-1,-1}, {1,-1}};
+
+                for (int[] move : bishopMoves) {
+                    /*int row = myPosition.getRow() + move[0];
+                    int col = myPosition.getColumn() + move[1];
+
+                    if (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
+                        ChessPosition newPosition = new ChessPosition(row, col);
+
+                        if (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != pieceColor) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                    }*/
+                }
                 break;
-            case KNIGHT:
+            case PieceType.KNIGHT:
                 int [][] knightMoves = {{-2,1}, {-1,2}, {1,2}, {2,1}, {2,-1}, {1,-2}, {-1,-2}, {-2,-1}};
 
                 for (int[] move : knightMoves) {
@@ -111,8 +152,24 @@ public class ChessPiece {
                 }
                 break;
             case ROOK:
+                int [][] rookMoves = {{0,1}, {-1,0}, {1,0}, {0,-1}};
+
+                for (int[] move : rookMoves) {
+                    /*int row = myPosition.getRow() + move[0];
+                    int col = myPosition.getColumn() + move[1];
+
+                    if (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
+                        ChessPosition newPosition = new ChessPosition(row, col);
+
+                        if (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != pieceColor) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                    }*/
+                }
                 break;
             case PAWN:
+                int [][] pawnMoves = {{0,1}, {0,2}};
+
                 break;
         }
         return moves;
