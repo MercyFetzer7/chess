@@ -123,16 +123,29 @@ public class ChessPiece {
                 int [][] bishopMoves = {{-1,1}, {1,1}, {-1,-1}, {1,-1}};
 
                 for (int[] move : bishopMoves) {
-                    /*int row = myPosition.getRow() + move[0];
-                    int col = myPosition.getColumn() + move[1];
+                    int row = myPosition.getRow();
+                    int col = myPosition.getColumn();
 
-                    if (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
+                    while (true) {
+                        row += move[0];
+                        col += move[1];
+
+                        if (row < 1 || row > 8 || col < 1 || col > 8) {
+                            break;
+                        }
+
                         ChessPosition newPosition = new ChessPosition(row, col);
 
-                        if (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != pieceColor) {
+                        if (board.getPiece(newPosition) == null) {
                             moves.add(new ChessMove(myPosition, newPosition, null));
                         }
-                    }*/
+                        else {
+                            if (board.getPiece(newPosition).getTeamColor() != pieceColor) {
+                                moves.add(new ChessMove(myPosition, newPosition, null));
+                            }
+                            break;
+                        }
+                    }
                 }
                 break;
             case PieceType.KNIGHT:
