@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -71,57 +72,41 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
 
-        throw new RuntimeException("Not implemented");
-    }
+        switch (type) {
+            case KING:
+                int [][] kingMoves = {{-1,1}, {0,1}, {1,1}, {-1,0}, {1,0}, {-1,-1}, {0,-1}, {1,-1}};
 
-   /* *//*WHITE TEAM*//*
-    ChessPiece pawn = new ChessPiece(
-            ChessGame.TeamColor.WHITE,
-            ChessPiece.PieceType.PAWN
-    );
-    ChessPiece rook = new ChessPiece(
-            ChessGame.TeamColor.WHITE,
-            PieceType.ROOK
-    );
-    ChessPiece knight = new ChessPiece(
-            ChessGame.TeamColor.WHITE,
-            PieceType.KNIGHT
-    );
-    ChessPiece bishop = new ChessPiece(
-            ChessGame.TeamColor.WHITE,
-            PieceType.BISHOP
-    );
-    ChessPiece queen = new ChessPiece(
-            ChessGame.TeamColor.WHITE,
-            PieceType.QUEEN
-    );
-    ChessPiece king = new ChessPiece(
-            ChessGame.TeamColor.WHITE,
-            PieceType.KING
-    );
-    *//*BLACK TEAM*//*
-    ChessPiece pawn = new ChessPiece(
-            ChessGame.TeamColor.BLACK,
-            ChessPiece.PieceType.PAWN
-    );
-    ChessPiece rook = new ChessPiece(
-            ChessGame.TeamColor.BLACK,
-            PieceType.ROOK
-    );
-    ChessPiece knight = new ChessPiece(
-            ChessGame.TeamColor.BLACK,
-            PieceType.KNIGHT
-    );
-    ChessPiece bishop = new ChessPiece(
-            ChessGame.TeamColor.BLACK,
-            PieceType.BISHOP
-    );
-    ChessPiece queen = new ChessPiece(
-            ChessGame.TeamColor.BLACK,
-            PieceType.QUEEN
-    );
-    ChessPiece king = new ChessPiece(
-            ChessGame.TeamColor.BLACK,
-            PieceType.KING
-    );*/
+                for (int[] move : kingMoves) {
+                    int row = myPosition.getRow() + move[0];
+                    int col = myPosition.getColumn() + move[1];
+
+                    if (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
+                        ChessPosition newPosition = new ChessPosition(row, col);
+
+                        if (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != pieceColor) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                    }
+                }
+                break;
+
+            case QUEEN:
+                break;
+            case BISHOP:
+                break;
+            case KNIGHT:
+                break;
+            case ROOK:
+                break;
+            case PAWN:
+                break;
+        }
+        return moves;
+
+       /* ChessPiece piece = board.getPiece(myPosition);
+        if (piece.getPieceType() == PieceType.BISHOP){
+            return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
+        }
+        return List.of();*/
+    }
 }
