@@ -162,7 +162,63 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+        ChessPosition kingPosition = null;
+
+        // find king
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(position);
+
+                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    kingPosition = position;
+                }
+            }
+        }
+
+        // no king found
+        if (kingPosition == null) {
+            return false;
+        }
+
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(position);
+
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    // pawns attack diagonally
+                    if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                        int direction;
+
+                        if (piece.getTeamColor() == TeamColor.WHITE) {
+                            direction = 1;
+                        }
+                        else {
+                            direction = -1;
+                        }
+
+                        int rowDifference = kingPosition.getRow() - position.getRow();
+                        int colDifference = kingPosition.getColumn() - position.getColumn();
+
+                        if (rowDifference == direction && (colDifference == 1 || colDifference == -1)) {
+                            return true;
+                        }
+                    }
+                    else {
+                        Collection<ChessMove> moves = piece.pieceMoves(board, position);
+
+                        for (ChessMove move : moves) {
+                            if (move.getEndPosition().equals(kingPosition)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
