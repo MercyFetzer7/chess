@@ -22,11 +22,15 @@ public class Server {
 
         userService = new UserService(userDAO, authDAO);
 
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
-
+        javalin = Javalin.create(config -> {
+            config.staticFiles.add("web");
+            config.jsonMapper(new io.javalin.json.JavalinGson());
+        });
         // Register endpoints
         javalin.delete("/db", this::clear);
         javalin.post("/user", this::register);
+        javalin.post("/session", this::login);
+        javalin.delete("/session", this::logout);
     }
 
     // DELETE /db
@@ -81,6 +85,63 @@ public class Server {
         }
     }
 
+    // POST /session
+    private void login(io.javalin.http.Context ctx) {
+        try {
+            LoginRequest request =
+                    gson.fromJson(ctx.body(), LoginRequest.class);
+
+            if (request == null) {
+                ctx.status(400);
+                ctx.json(new ErrorMessage("Error: bad request"));
+                return;
+            }
+
+            AuthData auth = userService.login(
+                    request.username(),
+                    request.password()
+            );
+
+            ctx.status(200);
+            ctx.json(new RegisterResult(
+                    auth.username(),
+                    auth.authToken()
+            ));
+
+        } catch (IllegalArgumentException e) {
+            ctx.status(400);
+            ctx.json(new ErrorMessage("Error: bad request"));
+
+        } catch (IllegalStateException e) {
+            ctx.status(401);
+            ctx.json(new ErrorMessage("Error: unauthorized"));
+
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.json(new ErrorMessage("Error: " + e.getMessage()));
+        }
+    }
+
+    // DELETE /session
+    private void logout(io.javalin.http.Context ctx) {
+        try {
+            String authToken = ctx.header("authorization");
+
+            userService.logout(authToken);
+
+            ctx.status(200);
+            ctx.result("{}");
+
+        } catch (IllegalStateException e) {
+            ctx.status(401);
+            ctx.json(new ErrorMessage("Error: unauthorized"));
+
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.json(new ErrorMessage("Error: " + e.getMessage()));
+        }
+    }
+
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         return javalin.port();
@@ -101,5 +162,11 @@ public class Server {
             String authToken
     ) {}
 
-    private record ErrorMessage(String message) {}
+    private record ErrorMessage(
+            String message
+    ) {}
+
+    private record LoginRequest(
+            String username, String password
+    ) {}
 }
