@@ -5,6 +5,7 @@ import dataaccess.*;
 import io.javalin.Javalin;
 import model.AuthData;
 import service.UserService;
+import service.GameService;
 
 public class Server {
 
@@ -13,6 +14,7 @@ public class Server {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
     private final UserService userService;
+    private final GameService gameService;
     private final Gson gson = new Gson();
 
     public Server() {
@@ -21,6 +23,7 @@ public class Server {
         gameDAO = new MemoryGameDAO();
 
         userService = new UserService(userDAO, authDAO);
+        gameService = new GameService(gameDAO, authDAO);
 
         javalin = Javalin.create(config -> {
             config.staticFiles.add("web");
@@ -31,6 +34,7 @@ public class Server {
         javalin.post("/user", this::register);
         javalin.post("/session", this::login);
         javalin.delete("/session", this::logout);
+        javalin.get("/game", this::listGames);
     }
 
     // DELETE /db
@@ -142,6 +146,26 @@ public class Server {
         }
     }
 
+    // GET /game
+    private void listGames(io.javalin.http.Context ctx) {
+        try {
+            String authToken = ctx.header("authorization");
+
+            var games = gameService.listGames(authToken);
+
+            ctx.status(200);
+            ctx.json(new ListGamesResult(games));
+
+        } catch (IllegalStateException e) {
+            ctx.status(401);
+            ctx.json(new ErrorMessage("Error: unauthorized"));
+
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.json(new ErrorMessage("Error: " + e.getMessage()));
+        }
+    }
+
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         return javalin.port();
@@ -168,5 +192,9 @@ public class Server {
 
     private record LoginRequest(
             String username, String password
+    ) {}
+
+    private record ListGamesResult(
+            java.util.List<model.GameData> games
     ) {}
 }
