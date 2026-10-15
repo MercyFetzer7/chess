@@ -35,6 +35,7 @@ public class Server {
         javalin.post("/session", this::login);
         javalin.delete("/session", this::logout);
         javalin.get("/game", this::listGames);
+        javalin.post("/game", this::createGame);
     }
 
     // DELETE /db
@@ -166,6 +167,40 @@ public class Server {
         }
     }
 
+    // POST /game
+    private void createGame(io.javalin.http.Context ctx) {
+        try {
+            CreateGameRequest request =
+                    gson.fromJson(ctx.body(), CreateGameRequest.class);
+
+            if (request == null) {
+                ctx.status(400);
+                ctx.json(new ErrorMessage("Error: bad request"));
+                return;
+            }
+
+            String authToken = ctx.header("authorization");
+
+            int gameID = gameService.createGame(
+                    authToken, request.gameName());
+
+            ctx.status(200);
+            ctx.json(new CreateGameResult(gameID));
+
+        } catch (IllegalArgumentException e) {
+            ctx.status(400);
+            ctx.json(new ErrorMessage("Error: bad request"));
+
+        } catch (IllegalStateException e) {
+            ctx.status(401);
+            ctx.json(new ErrorMessage("Error: unauthorized"));
+
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.json(new ErrorMessage("Error: " + e.getMessage()));
+        }
+    }
+
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         return javalin.port();
@@ -196,5 +231,12 @@ public class Server {
 
     private record ListGamesResult(
             java.util.List<model.GameData> games
+    ) {}
+    private record CreateGameRequest(
+            String gameName
+    ) {}
+
+    private record CreateGameResult(
+            int gameID
     ) {}
 }

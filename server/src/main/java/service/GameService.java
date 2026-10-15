@@ -26,4 +26,27 @@ public class GameService {
 
         return gameDAO.listGames();
     }
+
+    public int createGame(String authToken, String gameName)
+            throws DataAccessException {
+        AuthData auth = authDAO.getAuth(authToken);
+
+        if (auth == null) {
+            throw new IllegalStateException("Unauthorized");
+        }
+
+        if (gameName == null || gameName.isBlank()) {
+            throw new IllegalArgumentException("Bad request");
+        }
+
+        GameData game = new GameData(
+                0,
+                null,
+                null,
+                gameName,
+                new chess.ChessGame()
+        );
+
+        return gameDAO.createGame(game);
+    }
 }
