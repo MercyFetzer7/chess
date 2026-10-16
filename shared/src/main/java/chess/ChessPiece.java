@@ -113,7 +113,7 @@ public class ChessPiece {
                 ChessPosition newPosition = new ChessPosition(row + direction, col);
                 if (board.getPiece(newPosition) == null) {
                     // promotion
-                    addPawnMove(myPosition,newPosition, moves);
+                    promotionPawnMove(myPosition,newPosition, moves);
                     // move forward two
                     if (pieceColor == ChessGame.TeamColor.WHITE && row == 2 || pieceColor == ChessGame.TeamColor.BLACK && row == 7) {
                         newPosition = new ChessPosition(row + direction * 2, col);
@@ -130,7 +130,7 @@ public class ChessPiece {
                          newPosition = new ChessPosition(row + direction, newCol);
                         if (board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() != pieceColor) {
                             // promotion
-                            addPawnMove(myPosition, newPosition, moves);
+                            promotionPawnMove(myPosition, newPosition, moves);
                         }
                     }
                 }
@@ -195,7 +195,7 @@ public class ChessPiece {
         }
     }
 
-    private void addPawnMove(
+    private void promotionPawnMove(
             ChessPosition myPosition,
             ChessPosition newPosition,
             Collection<ChessMove> moves) {
