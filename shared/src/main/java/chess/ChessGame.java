@@ -190,14 +190,8 @@ public class ChessGame {
                 if (piece != null && piece.getTeamColor() != teamColor) {
                     // pawns attack diagonally
                     if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                        int direction;
 
-                        if (piece.getTeamColor() == TeamColor.WHITE) {
-                            direction = 1;
-                        }
-                        else {
-                            direction = -1;
-                        }
+                        int direction = piece.getTeamColor() == TeamColor.WHITE ? 1 : -1;
 
                         int rowDifference = kingPosition.getRow() - position.getRow();
                         int colDifference = kingPosition.getColumn() - position.getColumn();
