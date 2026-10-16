@@ -79,4 +79,46 @@ public class GameServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> service.createGame("valid-token", ""));
     }
+
+    @Test
+    void joinGameSuccess() throws Exception {
+        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        GameService service = new GameService(gameDAO, authDAO);
+
+        authDAO.createAuth(new AuthData("valid-token", "mercy"));
+
+        int gameID = gameDAO.createGame(new GameData(
+                0, null, null, "Test Game", new ChessGame()));
+
+        service.joinGame("valid-token", gameID, "WHITE");
+
+        GameData game = gameDAO.getGame(gameID);
+        assertEquals("mercy", game.whiteUsername());
+    }
+
+    @Test
+    void joinGameUnauthorized() {
+        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        GameService service = new GameService(gameDAO, authDAO);
+
+        assertThrows(IllegalStateException.class,
+                () -> service.joinGame("invalid-token", 1, "WHITE"));
+    }
+
+    @Test
+    void joinGameColorAlreadyTaken() throws Exception {
+        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        GameService service = new GameService(gameDAO, authDAO);
+
+        authDAO.createAuth(new AuthData("valid-token", "mercy"));
+
+        int gameID = gameDAO.createGame(new GameData(
+                0, "anotherUser", null, "Test Game", new ChessGame()));
+
+        assertThrows(IllegalStateException.class,
+                () -> service.joinGame("valid-token", gameID, "WHITE"));
+    }
 }

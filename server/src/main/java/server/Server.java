@@ -36,6 +36,7 @@ public class Server {
         javalin.delete("/session", this::logout);
         javalin.get("/game", this::listGames);
         javalin.post("/game", this::createGame);
+        javalin.put("/game", this::joinGame);
     }
 
     // DELETE /db
@@ -201,6 +202,46 @@ public class Server {
         }
     }
 
+    // PUT /game
+    private void joinGame(io.javalin.http.Context ctx) {
+        try {
+            JoinGameRequest request =
+                    gson.fromJson(ctx.body(), JoinGameRequest.class);
+
+            if (request == null || request.playerColor() == null) {
+                ctx.status(400);
+                ctx.json(new ErrorMessage("Error: bad request"));
+                return;
+            }
+
+            String authToken = ctx.header("authorization");
+
+            gameService.joinGame(
+                    authToken,
+                    request.gameID(),
+                    request.playerColor()
+            );
+
+            ctx.status(200);
+            ctx.json(new EmptyResult());
+
+        } catch (IllegalArgumentException e) {
+            ctx.status(400);
+            ctx.json(new ErrorMessage("Error: bad request"));
+        } catch (IllegalStateException e) {
+            if ("Unauthorized".equals(e.getMessage())) {
+                ctx.status(401);
+                ctx.json(new ErrorMessage("Error: unauthorized"));
+            } else {
+                ctx.status(403);
+                ctx.json(new ErrorMessage("Error: already taken"));
+            }
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.json(new ErrorMessage("Error: " + e.getMessage()));
+        }
+    }
+
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         return javalin.port();
@@ -226,7 +267,8 @@ public class Server {
     ) {}
 
     private record LoginRequest(
-            String username, String password
+            String username,
+            String password
     ) {}
 
     private record ListGamesResult(
@@ -239,4 +281,11 @@ public class Server {
     private record CreateGameResult(
             int gameID
     ) {}
+
+    private record JoinGameRequest(
+            int gameID,
+            String playerColor
+    ) {}
+
+    private record EmptyResult() {}
 }
