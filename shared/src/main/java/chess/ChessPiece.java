@@ -68,129 +68,36 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+    public Collection<ChessMove> pieceMoves(
+            ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
 
         switch (type) {
             case KING:
                 int [][] kingMoves = {{-1,1}, {0,1}, {1,1}, {-1,0}, {1,0}, {-1,-1}, {0,-1}, {1,-1}};
-
-                for (int[] move : kingMoves) {
-                    int row = myPosition.getRow() + move[0];
-                    int col = myPosition.getColumn() + move[1];
-
-                    if (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
-                        ChessPosition newPosition = new ChessPosition(row, col);
-                        if (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != pieceColor) {
-                            moves.add(new ChessMove(myPosition, newPosition, null));
-                        }
-                    }
-                }
+                addJumpMoves(board, myPosition, moves, kingMoves);
                 break;
 
             case QUEEN:
                 int [][] queenMoves = {{-1,1}, {0,1}, {1,1}, {-1,0}, {1,0}, {-1,-1}, {0,-1}, {1,-1}};
-
-                for (int[] move : queenMoves) {
-                    int row = myPosition.getRow();
-                    int col = myPosition.getColumn();
-
-                    while (true) {
-                        row += move[0];
-                        col += move[1];
-
-                        if (row < 1 || row > 8 || col < 1 || col > 8) {
-                            break;
-                        }
-
-                        ChessPosition newPosition = new ChessPosition(row, col);
-
-                        if (board.getPiece(newPosition) == null) {
-                            moves.add(new ChessMove(myPosition, newPosition, null));
-                        }
-                        else {
-                            if (board.getPiece(newPosition).getTeamColor() != pieceColor) {
-                                moves.add(new ChessMove(myPosition, newPosition, null));
-                            }
-                            break;
-                        }
-                    }
-                }
+                addSlidingMoves(board, myPosition, moves, queenMoves);
                 break;
+
             case BISHOP:
                 int [][] bishopMoves = {{-1,1}, {1,1}, {-1,-1}, {1,-1}};
-
-                for (int[] move : bishopMoves) {
-                    int row = myPosition.getRow();
-                    int col = myPosition.getColumn();
-
-                    while (true) {
-                        row += move[0];
-                        col += move[1];
-
-                        if (row < 1 || row > 8 || col < 1 || col > 8) {
-                            break;
-                        }
-
-                        ChessPosition newPosition = new ChessPosition(row, col);
-
-                        if (board.getPiece(newPosition) == null) {
-                            moves.add(new ChessMove(myPosition, newPosition, null));
-                        }
-                        else {
-                            if (board.getPiece(newPosition).getTeamColor() != pieceColor) {
-                                moves.add(new ChessMove(myPosition, newPosition, null));
-                            }
-                            break;
-                        }
-                    }
-                }
+                addSlidingMoves(board, myPosition, moves, bishopMoves);
                 break;
+
             case PieceType.KNIGHT:
                 int [][] knightMoves = {{-2,1}, {-1,2}, {1,2}, {2,1}, {2,-1}, {1,-2}, {-1,-2}, {-2,-1}};
+                addJumpMoves(board, myPosition, moves, knightMoves);
 
-                for (int[] move : knightMoves) {
-                    int row = myPosition.getRow() + move[0];
-                    int col = myPosition.getColumn() + move[1];
-
-                    if (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
-                        ChessPosition newPosition = new ChessPosition(row, col);
-
-                        if (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != pieceColor) {
-                            moves.add(new ChessMove(myPosition, newPosition, null));
-                        }
-                    }
-                }
                 break;
             case ROOK:
                 int [][] rookMoves = {{0,1}, {-1,0}, {1,0}, {0,-1}};
-
-                for (int[] move : rookMoves) {
-                    int row = myPosition.getRow();
-                    int col = myPosition.getColumn();
-
-                    while (true) {
-                        row += move[0];
-                        col += move[1];
-
-                        if (row < 1 || row > 8 || col < 1 || col > 8) {
-                            break;
-                        }
-
-                        ChessPosition newPosition = new ChessPosition(row, col);
-
-                        if (board.getPiece(newPosition) == null) {
-                            moves.add(new ChessMove(myPosition, newPosition, null));
-                        }
-                        else {
-                            if (board.getPiece(newPosition).getTeamColor() != pieceColor) {
-                                moves.add(new ChessMove(myPosition, newPosition, null));
-                            }
-                            break;
-                        }
-                    }
-                }
+                addSlidingMoves(board, myPosition, moves, rookMoves);
                 break;
+
             case PAWN:
                 int direction;
                 if (pieceColor == ChessGame.TeamColor.WHITE){
@@ -246,5 +153,61 @@ public class ChessPiece {
                 break;
         }
         return moves;
+    }
+
+    private void addJumpMoves(
+            ChessBoard board,
+            ChessPosition myPosition,
+            Collection<ChessMove> moves,
+            int[][] directions) {
+
+        for (int[] move : directions) {
+            int row = myPosition.getRow() + move[0];
+            int col = myPosition.getColumn() + move[1];
+
+            if (row < 1 || row > 8 || col < 1 || col > 8) {
+                continue;
+            }
+
+            ChessPosition newPosition = new ChessPosition(row, col);
+            ChessPiece target = board.getPiece(newPosition);
+
+            if (target == null || target.getTeamColor() != pieceColor) {
+                moves.add(new ChessMove(myPosition, newPosition, null));
+            }
+        }
+    }
+
+    private void addSlidingMoves(
+            ChessBoard board,
+            ChessPosition myPosition,
+            Collection<ChessMove> moves,
+            int[][] directions) {
+
+        for (int[] move : directions) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+
+            while (true) {
+                row += move[0];
+                col += move[1];
+
+                if (row < 1 || row > 8 || col < 1 || col > 8) {
+                    break;
+                }
+
+                ChessPosition newPosition = new ChessPosition(row, col);
+                ChessPiece target = board.getPiece(newPosition);
+
+                if (target == null) {
+                    moves.add(new ChessMove(myPosition, newPosition, null));
+                } else {
+                    if (target.getTeamColor() != pieceColor) {
+                        moves.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                    break;
+                }
+            }
+        }
     }
 }
