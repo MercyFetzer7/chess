@@ -173,31 +173,16 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(position);
 
-                if (piece != null && piece.getTeamColor() != teamColor) {
-                    // pawns attack diagonally
-                    if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                if (piece == null || piece.getTeamColor() == teamColor) {
+                    continue;
+                }
 
-                        int direction = piece.getTeamColor() == TeamColor.WHITE ? 1 : -1;
-
-                        int rowDifference = kingPosition.getRow() - position.getRow();
-                        int colDifference = kingPosition.getColumn() - position.getColumn();
-
-                        if (rowDifference == direction && (colDifference == 1 || colDifference == -1)) {
-                            return true;
-                        }
-                    }
-                    else {
-                        Collection<ChessMove> moves = piece.pieceMoves(board, position);
-
-                        for (ChessMove move : moves) {
-                            if (move.getEndPosition().equals(kingPosition)) {
-                                return true;
-                            }
-                        }
-                    }
+                if (attacksKing(piece, position, kingPosition)) {
+                    return true;
                 }
             }
         }
+
         return false;
     }
 
@@ -217,6 +202,28 @@ public class ChessGame {
 
         return null;
     }
+
+    private boolean attacksKing(ChessPiece piece, ChessPosition position, ChessPosition kingPosition) {
+
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            int direction = piece.getTeamColor() == TeamColor.WHITE ? 1 : -1;
+
+            int rowDifference = kingPosition.getRow() - position.getRow();
+            int colDifference = kingPosition.getColumn() - position.getColumn();
+
+            return rowDifference == direction && (colDifference == 1 || colDifference == -1);
+        }
+
+        Collection<ChessMove> moves = piece.pieceMoves(board, position);
+
+        for (ChessMove move : moves) {
+            if (move.getEndPosition().equals(kingPosition)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Determines if the given team is in checkmate
      *
