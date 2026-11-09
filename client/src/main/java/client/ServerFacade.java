@@ -1,6 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import model.AuthData;
 import model.GameData;
@@ -120,6 +121,22 @@ public class ServerFacade {
         );
 
         return Arrays.asList(games);
+    }
+
+    public int createGame(String authToken, String gameName)
+            throws IOException, InterruptedException {
+
+        Map<String, String> body = Map.of("gameName", gameName);
+
+        HttpResponse<String> response =
+                sendRequest("POST", "/game", gson.toJson(body), authToken);
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException(response.body());
+        }
+
+        return gson.fromJson(response.body(), JsonObject.class)
+                .get("gameID").getAsInt();
     }
 
 }

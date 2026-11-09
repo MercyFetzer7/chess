@@ -123,4 +123,23 @@ public class ServerFacadeTests {
                 facade.listGames("invalidToken")
         );
     }
+
+    @Test
+    public void createGameSuccess() throws Exception {
+        AuthData auth = facade.register(
+                "testUser", "password123", "test@email.com"
+        );
+
+        int gameID = facade.createGame(auth.authToken(), "Test Game");
+
+        Assertions.assertTrue(gameID > 0);
+    }
+
+    @Test
+    public void createGameUnauthorized() {
+        Assertions.assertThrows(RuntimeException.class, () ->
+                facade.createGame("invalidToken", "Test Game")
+        );
+    }
+
 }
