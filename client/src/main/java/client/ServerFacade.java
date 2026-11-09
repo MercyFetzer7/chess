@@ -1,13 +1,17 @@
 package client;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import model.AuthData;
+import model.GameData;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class ServerFacade {
@@ -96,6 +100,26 @@ public class ServerFacade {
         if (response.statusCode() != 200) {
             throw new RuntimeException(response.body());
         }
+    }
+
+    public List<GameData> listGames(String authToken)
+            throws IOException, InterruptedException {
+
+        HttpResponse<String> response =
+                sendRequest("GET", "/game", null, authToken);
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException(response.body());
+        }
+
+        GameData[] games = gson.fromJson(
+                JsonParser.parseString(response.body())
+                        .getAsJsonObject()
+                        .getAsJsonArray("games"),
+                GameData[].class
+        );
+
+        return Arrays.asList(games);
     }
 
 }

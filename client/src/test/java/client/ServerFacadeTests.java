@@ -104,4 +104,23 @@ public class ServerFacadeTests {
                 facade.logout("invalidToken")
         );
     }
+
+    @Test
+    public void listGamesSuccess() throws Exception {
+        AuthData auth = facade.register(
+                "testUser", "password123", "test@email.com"
+        );
+
+        var games = facade.listGames(auth.authToken());
+
+        Assertions.assertNotNull(games);
+        Assertions.assertTrue(games.isEmpty());
+    }
+
+    @Test
+    public void listGamesUnauthorized() {
+        Assertions.assertThrows(RuntimeException.class, () ->
+                facade.listGames("invalidToken")
+        );
+    }
 }
