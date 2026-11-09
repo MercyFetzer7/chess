@@ -87,5 +87,15 @@ public class ServerFacade {
 
         return gson.fromJson(response.body(), AuthData.class);
     }
+    public void logout(String authToken)
+            throws IOException, InterruptedException {
+
+        HttpResponse<String> response =
+                sendRequest("DELETE", "/session", null, authToken);
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException(response.body());
+        }
+    }
 
 }
