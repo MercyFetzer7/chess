@@ -43,6 +43,7 @@ public class ClientMain {
 
                     System.out.println("You successfully logged in!");
                     System.out.println("Welcome, " + auth.username() + "!");
+                    postLoginMenu(scanner, facade, auth);
 
                 } catch (Exception e) {
                     System.out.println("Login failed. Please check your username and password.");
@@ -62,12 +63,71 @@ public class ClientMain {
 
                     System.out.println("Registration successful!");
                     System.out.println("Welcome, " + auth.username() + "!");
+                    postLoginMenu(scanner, facade, auth);
 
                 } catch (Exception e) {
                     System.out.println("Registration failed. Username may already be taken.");
                 }
             } else {
                 System.out.println("Invalid choice.\n");
+            }
+        }
+    }
+    private static void postLoginMenu(Scanner scanner, ServerFacade facade, AuthData auth) {
+
+        boolean loggedIn = true;
+
+        while (loggedIn) {
+            System.out.println("\n♕ Chess Menu ♕");
+            System.out.println("1. Help");
+            System.out.println("2. Logout");
+            System.out.println("3. Create Game");
+            System.out.println("4. List Games");
+            System.out.println("5. Play Game");
+            System.out.println("6. Observe Game");
+
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("\nAvailable Commands:");
+                    System.out.println("1. Help - Show available commands.");
+                    System.out.println("2. Logout - Log out of your account.");
+                    System.out.println("3. Create Game - Create a new chess game.");
+                    System.out.println("4. List Games - View available games.");
+                    System.out.println("5. Play Game - Join a game.");
+                    System.out.println("6. Observe Game - Watch a game.");
+                    break;
+
+                case "2":
+                    try {
+                        facade.logout(auth.authToken());
+                        System.out.println("You successfully logged out!");
+                        loggedIn = false;
+                    } catch (Exception e) {
+                        System.out.println("Logout failed. Please try again.");
+                    }
+                    break;
+
+                case "3":
+                    System.out.println("Create Game");
+                    break;
+
+                case "4":
+                    System.out.println("List Games");
+                    break;
+
+                case "5":
+                    System.out.println("Play Game");
+                    break;
+
+                case "6":
+                    System.out.println("Observe Game");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
             }
         }
     }
