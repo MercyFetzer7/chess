@@ -111,7 +111,15 @@ public class ClientMain {
                     break;
 
                 case "3":
-                    System.out.println("Create Game");
+                    System.out.print("Enter a name for your game: ");
+                    String gameName = scanner.nextLine();
+
+                    try {
+                        facade.createGame(auth.authToken(), gameName);
+                        System.out.println("Game created successfully!");
+                    } catch (Exception e) {
+                        System.out.println("Could not create game. Please try again.");
+                    }
                     break;
 
                 case "4":
