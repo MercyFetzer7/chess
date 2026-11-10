@@ -28,10 +28,7 @@ public class ClientMain {
                 System.out.println("2. Quit - Exit the chess client.");
                 System.out.println("3. Login - Log into your account.");
                 System.out.println("4. Register - Create a new account. \n");
-                System.out.print("Choose an option: ");
-                choice = scanner.nextLine();
-            }
-            if (choice.equals("2")) {
+            } else if (choice.equals("2")) {
                 System.out.println("Goodbye");
                 running = false;
             } else if (choice.equals("3")) {
@@ -51,11 +48,27 @@ public class ClientMain {
                     System.out.println("Login failed. Please check your username and password.");
                 }
             } else if (choice.equals("4")) {
-                System.out.println("You selected: Register \n");
+                System.out.print("Choose a username: ");
+                String username = scanner.nextLine();
+
+                System.out.print("Choose a password: ");
+                String password = scanner.nextLine();
+
+                System.out.print("Enter your email: ");
+                String email = scanner.nextLine();
+
+                try {
+                    AuthData auth = facade.register(username, password, email);
+
+                    System.out.println("Registration successful!");
+                    System.out.println("Welcome, " + auth.username() + "!");
+
+                } catch (Exception e) {
+                    System.out.println("Registration failed. Username may already be taken.");
+                }
             } else {
                 System.out.println("Invalid choice.\n");
             }
-
         }
     }
 }
