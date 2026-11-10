@@ -142,4 +142,24 @@ public class ServerFacadeTests {
         );
     }
 
+    @Test
+    public void joinGameSuccess() throws Exception {
+        AuthData auth = facade.register(
+                "testUser", "password123", "test@email.com"
+        );
+
+        int gameID = facade.createGame(auth.authToken(), "Test Game");
+
+        Assertions.assertDoesNotThrow(() ->
+                facade.joinGame(auth.authToken(), gameID, "WHITE")
+        );
+    }
+
+    @Test
+    public void joinGameUnauthorized() {
+        Assertions.assertThrows(RuntimeException.class, () ->
+                facade.joinGame("invalidToken", 1, "WHITE")
+        );
+    }
+
 }

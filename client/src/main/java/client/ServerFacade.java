@@ -139,4 +139,20 @@ public class ServerFacade {
                 .get("gameID").getAsInt();
     }
 
+    public void joinGame(String authToken, int gameID, String playerColor)
+            throws IOException, InterruptedException {
+
+        Map<String, Object> body = Map.of(
+                "gameID", gameID,
+                "playerColor", playerColor
+        );
+
+        HttpResponse<String> response =
+                sendRequest("PUT", "/game", gson.toJson(body), authToken);
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException(response.body());
+        }
+    }
+
 }
