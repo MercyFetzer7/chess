@@ -1,7 +1,9 @@
 package client;
 
 import model.AuthData;
+import model.GameData;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class ClientMain {
@@ -122,9 +124,35 @@ public class ClientMain {
                     }
                     break;
 
-                case "4":
-                    System.out.println("List Games");
+                case "4": {
+                    try {
+                        List<GameData> games = facade.listGames(auth.authToken());
+
+                        if (games.isEmpty()) {
+                            System.out.println("There are currently no games.");
+                        } else {
+                            System.out.println("\nAvailable Games:");
+
+                            for (int i = 0; i < games.size(); i++) {
+                                GameData game = games.get(i);
+
+                                String white = game.whiteUsername() == null
+                                        ? "Open" : game.whiteUsername();
+
+                                String black = game.blackUsername() == null
+                                        ? "Open" : game.blackUsername();
+
+                                System.out.println((i + 1) + ". " + game.gameName());
+                                System.out.println("   White: " + white);
+                                System.out.println("   Black: " + black);
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        System.out.println("Could not retrieve games. Please try again.");
+                    }
                     break;
+                }
 
                 case "5":
                     System.out.println("Play Game");
