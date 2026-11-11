@@ -154,9 +154,54 @@ public class ClientMain {
                     break;
                 }
 
-                case "5":
-                    System.out.println("Play Game");
+                case "5": {
+                    try {
+                        List<GameData> games = facade.listGames(auth.authToken());
+
+                        if (games.isEmpty()) {
+                            System.out.println("There are no games to join.");
+                            break;
+                        }
+
+                        System.out.println("\nAvailable Games:");
+
+                        for (int i = 0; i < games.size(); i++) {
+                            System.out.println((i + 1) + ". " + games.get(i).gameName());
+                        }
+
+                        System.out.print("Choose a game number: ");
+                        int gameChoice = Integer.parseInt(scanner.nextLine());
+
+                        if (gameChoice < 1 || gameChoice > games.size()) {
+                            System.out.println("Invalid game number.");
+                            break;
+                        }
+
+                        GameData selectedGame = games.get(gameChoice - 1);
+
+                        System.out.print("Choose a color (WHITE or BLACK): ");
+                        String color = scanner.nextLine().toUpperCase();
+
+                        if (!color.equals("WHITE") && !color.equals("BLACK")) {
+                            System.out.println("Invalid color.");
+                            break;
+                        }
+
+                        facade.joinGame(
+                                auth.authToken(),
+                                selectedGame.gameID(),
+                                color
+                        );
+
+                        System.out.println("You successfully joined the game!");
+
+                    } catch (NumberFormatException e) {
+                        System.out.println("Please enter a valid game number.");
+                    } catch (Exception e) {
+                        System.out.println("Could not join game. The selected spot may already be taken.");
+                    }
                     break;
+                }
 
                 case "6":
                     System.out.println("Observe Game");
