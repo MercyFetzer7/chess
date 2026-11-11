@@ -203,9 +203,40 @@ public class ClientMain {
                     break;
                 }
 
-                case "6":
-                    System.out.println("Observe Game");
+                case "6": {
+                    try {
+                        List<GameData> games = facade.listGames(auth.authToken());
+
+                        if (games.isEmpty()) {
+                            System.out.println("There are no games to observe.");
+                            break;
+                        }
+
+                        System.out.println("\nAvailable Games:");
+
+                        for (int i = 0; i < games.size(); i++) {
+                            System.out.println((i + 1) + ". " + games.get(i).gameName());
+                        }
+
+                        System.out.print("Choose a game number: ");
+                        int gameChoice = Integer.parseInt(scanner.nextLine());
+
+                        if (gameChoice < 1 || gameChoice > games.size()) {
+                            System.out.println("Invalid game number.");
+                            break;
+                        }
+
+                        GameData selectedGame = games.get(gameChoice - 1);
+
+                        System.out.println("You are now observing " + selectedGame.gameName() + "!");
+
+                    } catch (NumberFormatException e) {
+                        System.out.println("Please enter a valid game number.");
+                    } catch (Exception e) {
+                        System.out.println("Could not observe game. Please try again.");
+                    }
                     break;
+                }
 
                 default:
                     System.out.println("Invalid choice.");
