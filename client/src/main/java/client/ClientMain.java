@@ -194,6 +194,7 @@ public class ClientMain {
                         );
 
                         System.out.println("You successfully joined the game!");
+                        printBoard(selectedGame.game(), color.equals("WHITE"));
 
                     } catch (NumberFormatException e) {
                         System.out.println("Please enter a valid game number.");
@@ -227,8 +228,8 @@ public class ClientMain {
                         }
 
                         GameData selectedGame = games.get(gameChoice - 1);
-
                         System.out.println("You are now observing " + selectedGame.gameName() + "!");
+                        printBoard(selectedGame.game(), true);
 
                     } catch (NumberFormatException e) {
                         System.out.println("Please enter a valid game number.");
@@ -242,5 +243,60 @@ public class ClientMain {
                     System.out.println("Invalid choice.");
             }
         }
+    }
+
+    private static void printBoard(chess.ChessGame game, boolean whitePerspective) {
+
+        chess.ChessBoard board = game.getBoard();
+
+        System.out.println();
+
+        for (int row = 0; row < 8; row++) {
+            int displayRow = whitePerspective ? row : 7 - row;
+
+            System.out.print((8 - displayRow) + " ");
+
+            for (int col = 0; col < 8; col++) {
+                int displayCol = whitePerspective ? col : 7 - col;
+
+                chess.ChessPosition position =
+                        new chess.ChessPosition(8 - displayRow, displayCol + 1);
+
+                chess.ChessPiece piece = board.getPiece(position);
+
+                if (piece == null) {
+                    boolean lightSquare = (displayRow + displayCol) % 2 == 0;
+
+                    String background = lightSquare ? "\u001B[48;5;183m" : "\u001B[48;5;55m";
+                    System.out.print(background + "   \u001B[0m");
+
+                } else {
+                    String symbol = switch (piece.getPieceType()) {
+                        case KING -> "K";
+                        case QUEEN -> "Q";
+                        case ROOK -> "R";
+                        case BISHOP -> "B";
+                        case KNIGHT -> "N";
+                        case PAWN -> "P";
+                    };
+
+                    if (piece.getTeamColor() == chess.ChessGame.TeamColor.BLACK) {
+                        symbol = symbol.toLowerCase();
+                    }
+
+                    boolean lightSquare = (displayRow + displayCol) % 2 == 0;
+
+                    String background = lightSquare ? "\u001B[48;5;183m" : "\u001B[48;5;55m";
+                    String foreground = piece.getTeamColor() == chess.ChessGame.TeamColor.WHITE
+                            ? "\u001B[97m" : "\u001B[30m";
+
+                    System.out.print(background + foreground + " " + symbol + " \u001B[0m");                }
+            }
+
+            System.out.println();
+        }
+
+        System.out.println("   a  b  c  d  e  f  g  h");
+        System.out.println();
     }
 }
