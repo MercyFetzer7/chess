@@ -315,7 +315,11 @@ public class ClientMain {
             System.out.println();
         }
 
-        System.out.println("   a  b  c  d  e  f  g  h");
+        if (whitePerspective) {
+            System.out.println("   a  b  c  d  e  f  g  h");
+        } else {
+            System.out.println("   h  g  f  e  d  c  b  a");
+        }
         System.out.println();
     }
 }
