@@ -45,6 +45,12 @@ public class Server {
         javalin.get("/game", this::listGames);
         javalin.post("/game", this::createGame);
         javalin.put("/game", this::joinGame);
+
+        javalin.ws("/ws", wsConfig -> {
+            wsConfig.onConnect(ctx -> {
+                //websocket handling
+            });
+        });
     }
 
     // DELETE /db
